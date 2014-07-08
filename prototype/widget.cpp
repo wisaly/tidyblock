@@ -1,6 +1,7 @@
 #include "widget.h"
 #include "ui_widget.h"
 #include <QDebug>
+#include <QPropertyAnimation>
 
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
@@ -114,9 +115,11 @@ void Widget::blockClicked()
 
         for (int i = 0;i <= len / 2;i++)
         {
-            Block::Color color = blocks_[map_[x][from + i]].color;
-            setColor(map_[x][from + i],blocks_[map_[x][from + len - i]].color);
-            setColor(map_[x][from + len - i],color);
+//            Block::Color color = blocks_[map_[x][from + i]].color;
+//            setColor(map_[x][from + i],blocks_[map_[x][from + len - i]].color);
+//            setColor(map_[x][from + len - i],color);
+
+            swapBlock(map_[x][from + i],map_[x][from + len - i]);
         }
 
         moved = true;
@@ -130,9 +133,11 @@ void Widget::blockClicked()
 
         for (int i = 0;i <= len / 2;i++)
         {
-            Block::Color color = blocks_[map_[from + i][y]].color;
-            setColor(map_[from + i][y],blocks_[map_[from + len - i][y]].color);
-            setColor(map_[from + len - i][y],color);
+//            Block::Color color = blocks_[map_[from + i][y]].color;
+//            setColor(map_[from + i][y],blocks_[map_[from + len - i][y]].color);
+//            setColor(map_[from + len - i][y],color);
+
+            swapBlock(map_[from + i][y],map_[from + len - i][y]);
         }
 
         moved = true;
@@ -186,6 +191,33 @@ void Widget::setColor(QPushButton *button, Widget::Block::Color color)
         palette.setColor(QPalette::Active,QPalette::Button,QColor(Qt::blue));
     }
     button->setPalette(palette);
+}
+
+void Widget::swapBlock(QPushButton *btn1, QPushButton *btn2)
+{
+    QRect rc1 = btn1->geometry();
+    QRect rc2 = btn2->geometry();
+
+    QPropertyAnimation *animation1 = new QPropertyAnimation(btn1, "geometry");
+    animation1->setDuration(300);
+    animation1->setStartValue(rc1);
+    animation1->setEndValue(rc2);
+    animation1->start();
+
+    QPropertyAnimation *animation2 = new QPropertyAnimation(btn2, "geometry");
+    animation2->setDuration(300);
+    animation2->setStartValue(rc2);
+    animation2->setEndValue(rc1);
+    animation2->start();
+
+//    btn1->setGeometry(rc2);
+//    btn2->setGeometry(rc1);
+
+    qSwap(blocks_[btn1].x,blocks_[btn2].x);
+    qSwap(blocks_[btn1].y,blocks_[btn2].y);
+
+    map_[blocks_[btn1].x][blocks_[btn1].y] = btn1;
+    map_[blocks_[btn2].x][blocks_[btn2].y] = btn2;
 }
 
 void Widget::drawHLine(int y, int xfrom, int xto)

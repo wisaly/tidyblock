@@ -31,6 +31,7 @@ public slots:
 
 private:
     void setColor(QPushButton *button,Block::Color color);
+    void swapBlock(QPushButton *btn1,QPushButton *btn2);
     void drawHLine(int y,int xfrom,int xto);
     void drawVLine(int x,int yfrom,int yto);
     void clearText();
